@@ -1,0 +1,47 @@
+# Arquivos de configuração
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Pasta de saída de compilação
+*/**/bin/
+*/**/obj/
+
+# Arquivos temporários
+*.user
+*.vscode
+.vs/
+
+# Arquivos de pacotes NuGet
+*.nuget.props
+*.nuget.targets
+packages/
+
+# Arquivos de compilação do Visual Studio
+*.suo
+*.user
+*.sln.docstates
+
+# Logs e arquivos temporários
+*.log
+*.swp
+Thumbs.db
+
+# Cache de ferramentas
+.vscode/
+
+# Pasta de dependências geradas (geralmente chamada "obj")
+obj/
+
+# Arquivo de projeto local
+.project
+
+# Cache do .NET
+.dotnet/
+
+# Pasta de saída do publish
+/publish/
+
+# Arquivos de diagnóstico
+/*.log
+/*.log.*
