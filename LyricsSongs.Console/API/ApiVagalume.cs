@@ -8,8 +8,10 @@
     public class ApiVagalume
     {
         private Dictionary<int, Musica> musicasBuscadas = new();
+        private Musica musicaSelecionada = new();
         private readonly string API_KEY = "d8f3e5fabca6e3e0ab123723bcd3e918";
-        public async Task SearchMusicas(string textoPesquisa)
+
+        public async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
         {
             using (HttpClient client = new())
             {
@@ -23,40 +25,51 @@
 
                     for (int i = 0; i < musicas.Count; i++)
                         this.musicasBuscadas.Add(i + 1, musicas[i]);
-
-                    mostrarMusicasBuscadas();
                 }
                 catch (Exception ex)
                 {
                     System.Console.WriteLine(ex);
+
                 }
             }
+
+            return this.musicasBuscadas;
         }
 
-        public void mostrarMusicasBuscadas()
-        {
-            Console.WriteLine("Músicas encontradas: ");
-            foreach (var item in this.musicasBuscadas)
-                Console.WriteLine($"{item.Key} - {item.Value.Titulo} - {item.Value.Banda}");
 
-            Console.Write("\nSelecione a música correta:");
-            getMusicaEscolhida(Console.Read());
-        }
 
-        public void getMusicaEscolhida(int musicaEscolhida)
+        public async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
         {
             if (this.musicasBuscadas.ContainsKey(musicaEscolhida))
             {
                 using (HttpClient client = new())
                 {
                     string url = $"https://api.vagalume.com.br/search.php?musid={this.musicasBuscadas[musicaEscolhida].Id}&apikey={this.API_KEY}";
-                    client.GetStringAsync(url);
+                    //string url = $"https://api.vagalume.com.br/search.php?musid=3ade68b6g4946fda3&apikey={this.API_KEY}";
+                    var retorno = await client.GetStringAsync(url);
+
+                    var retornoObjeto = JsonDocument.Parse(retorno);
+                    var musicaInfo = retornoObjeto.RootElement.GetProperty("mus");
+                    var bandaInfo = retornoObjeto.RootElement.GetProperty("art");
+
+
+
+                    this.musicaSelecionada = new()
+                    {
+                        Id = musicaInfo[0].GetProperty("id").ToString(),
+                        Url = musicaInfo[0].GetProperty("url").ToString(),
+                        Nome = musicaInfo[0].GetProperty("name").ToString(),
+                        Banda = bandaInfo.GetProperty("name").ToString(),
+                        LetraOriginal = musicaInfo[0].GetProperty("text").ToString(),
+                        LetraTraduzida = musicaInfo[0].TryGetProperty("translate", out var translateElement) && translateElement.TryGetProperty("text", out var textElement) ? textElement.ToString() : null
+                    };
                 }
             }
             else
             {
                 Console.WriteLine("Opção selecionada inválida!");
             }
+            return this.musicaSelecionada;
         }
     }
 }

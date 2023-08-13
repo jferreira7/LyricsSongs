@@ -22,13 +22,6 @@
             Console.WriteLine("3 - Configurações");
             Console.WriteLine("0 - Sair");
             Console.WriteLine("");
-
-            GetOpcaoSelecionada(Console.Read());
-        }
-
-        public void GetOpcaoSelecionada(int opcao)
-        {
-
         }
     }
 }
