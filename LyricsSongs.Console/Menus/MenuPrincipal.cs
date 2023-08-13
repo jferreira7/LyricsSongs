@@ -12,7 +12,7 @@
 ╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░╚════╝░╚═════╝░   ╚═════╝░░╚════╝░╚═╝░░╚══╝░╚═════╝░╚═════╝░";
 
 
-        public override void Exibir()
+        public override Task Exibir()
         {
             Console.WriteLine(logo);
 
@@ -22,6 +22,8 @@
             Console.WriteLine("3 - Configurações");
             Console.WriteLine("0 - Sair");
             Console.WriteLine("");
+
+            return Task.CompletedTask;
         }
     }
 }

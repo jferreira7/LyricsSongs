@@ -2,6 +2,6 @@
 {
     internal class Menu
     {
-        public virtual void Exibir() { }
+        public virtual Task Exibir() { return Task.CompletedTask; }
     }
 }

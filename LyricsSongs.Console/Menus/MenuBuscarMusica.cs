@@ -14,7 +14,7 @@
             api = new();
         }
 
-        public async override void Exibir()
+        public override async Task Exibir()
         {
             Console.WriteLine("Buscar musica\n");
 
@@ -33,28 +33,34 @@
 
         public async Task mostrarMusicasBuscadas()
         {
-            Console.WriteLine("Músicas encontradas: ");
+            Console.WriteLine("\nMúsicas encontradas: ");
             foreach (var item in this.musicasEncontradas)
             {
                 Console.WriteLine($"{item.Key} - {item.Value.Nome} - {item.Value.Banda}");
             }
 
-            //Console.Write("Selecione a música correta: ");
-            //string input = Console.ReadLine()!;
+            Console.Write("\nSelecione a música correta: ");
+            string? input = Console.ReadLine();
             //if (int.TryParse(input, out int musicaEscolhida))
             //{
-            await this.mostrarMusicaSelecionada(int.Parse(Console.ReadLine()!));
+            await mostrarMusicaSelecionada(int.Parse(input!));
             //}
             //else
             //{
             //    Console.WriteLine("Entrada inválida. Por favor, digite um número inteiro válido.");
             //}
-            //Console.ReadKey();
         }
 
         public async Task mostrarMusicaSelecionada(int musicaEscolhida)
         {
             Musica musicaSelecionada = await this.api.getMusicaSelecionada(musicaEscolhida);
+
+            Console.Clear();
+
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
+            //    Console.BufferHeight = Int16.MaxValue - 1;
+            //}
 
             Console.WriteLine($"Musica: {musicaSelecionada.Nome}");
             Console.WriteLine($"Banda: {musicaSelecionada.Banda}\n");
