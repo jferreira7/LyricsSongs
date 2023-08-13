@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using System.Text.Json.Nodes;
 
     public class ApiVagalume
     {
@@ -28,30 +29,30 @@
                     string url = $"https://api.vagalume.com.br/search.artmus?apikey={this.API_KEY}&q={textoPesquisa}&limit=5";
                     string retorno = await client.GetStringAsync(url);
 
-                    var retornoObjeto = JsonDocument.Parse(retorno);
-                    var docs = retornoObjeto.RootElement.GetProperty("response").GetProperty("docs");
-                    List<Musica> musicas = JsonSerializer.Deserialize<List<Musica>>(docs.ToString())!;
+                    JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
+                    JsonArray? docs = retornoObjeto?["response"]?["docs"]?.AsArray();
 
-                    int z = 0;
-                    for (int i = 0; i < musicas.Count; i++)
+                    for (int i = 0, z = 0; i < docs?.Count; i++)
                     {
-                        if (musicas[i].Nome != null)
+                        if (docs?[i]?["title"] == null) continue;
+
+                        this.musicasBuscadas.Add(++z, new Musica()
                         {
-                            this.musicasBuscadas.Add(++z, musicas[i]);
-                        }
+                            Id = docs?[i]?["id"]?.ToString(),
+                            Nome = docs?[i]?["title"]?.ToString(),
+                            Banda = docs?[i]?["band"]?.ToString(),
+                            Url = docs?[i]?["url"]?.ToString()
+                        });
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Console.WriteLine(ex);
-
+                    Console.WriteLine(ex);
                 }
             }
 
             return this.musicasBuscadas;
         }
-
-
 
         public async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
         {
@@ -62,18 +63,18 @@
                     string url = $"https://api.vagalume.com.br/search.php?musid={this.musicasBuscadas[musicaEscolhida].Id}&apikey={this.API_KEY}";
                     var retorno = await client.GetStringAsync(url);
 
-                    var retornoObjeto = JsonDocument.Parse(retorno);
-                    var musicaInfo = retornoObjeto.RootElement.GetProperty("mus");
-                    var bandaInfo = retornoObjeto.RootElement.GetProperty("art");
+                    JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
+                    JsonNode? musicaInfo = retornoObjeto?["mus"];
+                    JsonNode? bandaInfo = retornoObjeto?["art"];
 
                     this.musicaSelecionada = new()
                     {
-                        Id = musicaInfo[0].GetProperty("id").ToString(),
-                        Url = musicaInfo[0].GetProperty("url").ToString(),
-                        Nome = musicaInfo[0].GetProperty("name").ToString(),
-                        Banda = bandaInfo.GetProperty("name").ToString(),
-                        LetraOriginal = musicaInfo[0].GetProperty("text").ToString(),
-                        LetraTraduzida = musicaInfo[0].TryGetProperty("translate", out var translateElement) && translateElement.TryGetProperty("text", out var textElement) ? textElement.ToString() : null
+                        Id = musicaInfo?[0]?["id"]?.ToString(),
+                        Url = musicaInfo?[0]?["url"]?.ToString(),
+                        Nome = musicaInfo?[0]?["name"]?.ToString(),
+                        Banda = bandaInfo?["name"]?.ToString(),
+                        LetraOriginal = musicaInfo?[0]?["text"]?.ToString(),
+                        LetraTraduzida = musicaInfo?[0]?["translate"]?[0]?["text"]?.ToString()
                     };
                 }
             }

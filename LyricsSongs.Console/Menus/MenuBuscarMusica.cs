@@ -35,20 +35,27 @@
         {
             Console.WriteLine("\nMúsicas encontradas: ");
             foreach (var item in this.musicasEncontradas)
-            {
                 Console.WriteLine($"{item.Key} - {item.Value.Nome} - {item.Value.Banda}");
-            }
 
-            Console.Write("\nSelecione a música correta: ");
-            string? input = Console.ReadLine();
-            //if (int.TryParse(input, out int musicaEscolhida))
-            //{
-            await mostrarMusicaSelecionada(int.Parse(input!));
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Entrada inválida. Por favor, digite um número inteiro válido.");
-            //}
+
+            bool respostaInvalida = true;
+            do
+            {
+                Console.Write("\nSelecione a música correta: ");
+                string? input = Console.ReadLine();
+
+                bool conseguiuConverter = int.TryParse(input, out int musicaEscolhida);
+
+                if (conseguiuConverter && musicaEscolhida >= 0 && musicaEscolhida <= this.musicasEncontradas.Count)
+                {
+                    await mostrarMusicaSelecionada(musicaEscolhida);
+                    respostaInvalida = false;
+                }
+                else
+                {
+                    Console.WriteLine("Entrada inválida. Por favor, digite um número inteiro válido.");
+                }
+            } while (respostaInvalida);
         }
 
         public async Task mostrarMusicaSelecionada(int musicaEscolhida)
@@ -56,11 +63,6 @@
             Musica musicaSelecionada = await this.api.getMusicaSelecionada(musicaEscolhida);
 
             Console.Clear();
-
-            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            //{
-            //    Console.BufferHeight = Int16.MaxValue - 1;
-            //}
 
             Console.WriteLine($"Musica: {musicaSelecionada.Nome}");
             Console.WriteLine($"Banda: {musicaSelecionada.Banda}\n");
