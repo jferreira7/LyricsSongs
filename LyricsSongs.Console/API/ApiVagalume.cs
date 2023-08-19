@@ -60,7 +60,8 @@
             {
                 using (HttpClient client = new())
                 {
-                    string url = $"https://api.vagalume.com.br/search.php?musid={this.musicasBuscadas[musicaEscolhida].Id}&apikey={this.API_KEY}";
+                    Guid guid = Guid.NewGuid();
+                    string url = $"https://api.vagalume.com.br/search.php?musid={this.musicasBuscadas[musicaEscolhida].Id}&apikey={this.API_KEY}&hash={guid.ToString()}";
                     var retorno = await client.GetStringAsync(url);
 
                     JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
@@ -80,7 +81,7 @@
             }
             else
             {
-                Console.WriteLine("Opção selecionada inválida!");
+                Console.WriteLine("Opção selecionada inválida!!");
             }
 
             return this.musicaSelecionada;

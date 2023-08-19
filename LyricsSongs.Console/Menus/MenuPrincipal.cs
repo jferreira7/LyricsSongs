@@ -1,10 +1,11 @@
 ﻿namespace LyricsSongs.Console.Menus
 {
+    using LyricsSongs.Console.Services;
     using System;
 
     internal class MenuPrincipal : Menu
     {
-        string logo = @"
+        private string logo = @"
 ██╗░░░░░██╗░░░██╗██████╗░██╗░█████╗░░██████╗   ░██████╗░█████╗░███╗░░██╗░██████╗░░██████╗
 ██║░░░░░╚██╗░██╔╝██╔══██╗██║██╔══██╗██╔════╝   ██╔════╝██╔══██╗████╗░██║██╔════╝░██╔════╝
 ██║░░░░░░╚████╔╝░██████╔╝██║██║░░╚═╝╚█████╗░   ╚█████╗░██║░░██║██╔██╗██║██║░░██╗░╚█████╗░
@@ -12,20 +13,22 @@
 ███████╗░░░██║░░░██║░░██║██║╚█████╔╝██████╔╝   ██████╔╝╚█████╔╝██║░╚███║╚██████╔╝██████╔╝
 ╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░╚════╝░╚═════╝░   ╚═════╝░░╚════╝░╚═╝░░╚══╝░╚═════╝░╚═════╝░";
 
-        Dictionary<int, Menu> opcoes;
+        private Dictionary<int, Type> opcoes;
+        private IJsonFileService _jsonFileService;
 
-        public MenuPrincipal()
+        public MenuPrincipal(IJsonFileService jsonFileService)
         {
+            this._jsonFileService = jsonFileService;
             this.opcoes = new()
             {
-                { 1, new MenuBuscarMusica() },
-                { 2, new MenuLetrasSalvas() },
-                { 3, new MenuConfiguracoes() },
-                { 0, new MenuSair() }
+                { 1, typeof(MenuBuscarMusica) },
+                { 2, typeof(MenuLetrasSalvas) },
+                { 3, typeof(MenuConfiguracoes) },
+                { 0, typeof(MenuSair) }
             };
         }
 
-        public async override Task Exibir()
+        public override async Task Exibir()
         {
             await base.Exibir();
             Console.WriteLine(logo);
@@ -37,10 +40,10 @@
             Console.WriteLine("0 - Sair");
             Console.WriteLine("");
 
-            await this.getOpcaoSelecionada();
+            await this.GetOpcaoSelecionada();
         }
 
-        public async Task getOpcaoSelecionada()
+        public async Task GetOpcaoSelecionada()
         {
             bool respostaInvalida = true;
             do
@@ -52,7 +55,7 @@
 
                 if (conseguiuConverter && opcoes.ContainsKey(opcaoSelecionada))
                 {
-                    await this.mostrarMenuSelecionado(opcaoSelecionada);
+                    await this.MostrarMenuSelecionado(opcaoSelecionada);
                     respostaInvalida = false;
                 }
                 else
@@ -62,15 +65,30 @@
             } while (respostaInvalida);
         }
 
-        public async Task mostrarMenuSelecionado(int opcaoSelecionada)
+        public async Task MostrarMenuSelecionado(int opcaoSelecionada)
         {
-            Menu menu = opcoes[opcaoSelecionada];
-            await menu.Exibir();
+            Menu? menu = null;
 
-            Console.Write("\nPressione qualquer tecla para voltar ao menu principal...");
-            Console.ReadLine();
+            switch (opcaoSelecionada)
+            {
+                case 1:
+                    menu = new MenuBuscarMusica(this._jsonFileService);
+                    break;
 
-            await base.VoltarMenuPrincipal();
+                case 2:
+                    menu = new MenuLetrasSalvas(this._jsonFileService);
+                    break;
+
+                case 0:
+                    menu = new MenuSair();
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (menu != null)
+                await menu.Exibir();
         }
     }
 }

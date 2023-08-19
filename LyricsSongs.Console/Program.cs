@@ -1,17 +1,25 @@
 ﻿namespace LyricsSongs.Console
 {
     using LyricsSongs.Console.Menus;
+    using LyricsSongs.Console.Service;
+    using LyricsSongs.Console.Services;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Text;
 
     internal class Program
     {
-
-        static void Main()
+        private static void Main()
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            MenuPrincipal menuPrincipal = new MenuPrincipal();
+            ServiceProvider serviceProvider = new ServiceCollection()
+              .AddSingleton<IJsonFileService, JsonFileService>()
+              .BuildServiceProvider();
+
+            IJsonFileService jsonFileService = serviceProvider.GetService<IJsonFileService>()!;
+
+            MenuPrincipal menuPrincipal = new MenuPrincipal(jsonFileService);
             menuPrincipal.Exibir().Wait();
         }
     }

@@ -2,16 +2,24 @@
 {
     using LyricsSongs.Console.API;
     using LyricsSongs.Console.Models;
+    using LyricsSongs.Console.Services;
     using System;
+    using System.Runtime.InteropServices;
 
     internal class MenuBuscarMusica : Menu
     {
         public Dictionary<int, Musica> musicasEncontradas = new();
-        ApiVagalume api;
+        private ApiVagalume _api;
+        private Musica _musicaSelecionada;
+        private IJsonFileService _jsonFileService;
+        private bool _exibindoTraducao;
 
-        public MenuBuscarMusica()
+        public MenuBuscarMusica(IJsonFileService jsonFileService)
         {
-            api = new();
+            this._jsonFileService = jsonFileService;
+            this._api = new();
+            this._musicaSelecionada = new();
+            this._exibindoTraducao = false;
         }
 
         public override async Task Exibir()
@@ -33,7 +41,7 @@
 
             if (buscaTexto == "0")
             {
-                await base.VoltarMenuPrincipal();
+                await base.VoltarMenuPrincipal(this._jsonFileService);
                 return;
             }
 
@@ -42,7 +50,7 @@
 
         public async Task buscarMusicasParaSelecionar(string buscaTexto)
         {
-            this.musicasEncontradas = await this.api.SearchMusicas(buscaTexto);
+            this.musicasEncontradas = await this._api.SearchMusicas(buscaTexto);
 
             if (this.musicasEncontradas.Count == 0)
             {
@@ -68,15 +76,15 @@
             do
             {
                 Console.Write("\nSelecione a música correta (0 p/ voltar): ");
-                string? input = Console.ReadLine();
+                string? reposta = Console.ReadLine();
 
-                bool conseguiuConverter = int.TryParse(input, out int musicaEscolhida);
+                bool conseguiuConverterResposta = int.TryParse(reposta, out int musicaEscolhida);
 
-                if (conseguiuConverter && musicaEscolhida >= 0 && musicaEscolhida <= this.musicasEncontradas.Count)
+                if (conseguiuConverterResposta && musicaEscolhida >= 0 && musicaEscolhida <= this.musicasEncontradas.Count)
                 {
                     if (musicaEscolhida == 0)
                     {
-                        await base.VoltarMenuPrincipal();
+                        await base.VoltarMenuPrincipal(this._jsonFileService);
                         return;
                     }
 
@@ -90,16 +98,82 @@
             } while (respostaInvalida);
         }
 
-        public async Task mostrarLetraOriginalMusicaSelecionada(int musicaEscolhida)
+        public async Task mostrarLetraOriginalMusicaSelecionada([Optional] int musicaEscolhida)
         {
-            Musica musicaSelecionada = await this.api.getMusicaSelecionada(musicaEscolhida);
+            if (this._musicaSelecionada.Id == null && musicaEscolhida != 0)
+                this._musicaSelecionada = await this._api.getMusicaSelecionada(musicaEscolhida);
 
             Console.Clear();
 
-            Console.WriteLine($"Musica: {musicaSelecionada.Nome}");
-            Console.WriteLine($"Cantor(a)/Banda: {musicaSelecionada.Banda}\n");
+            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(musicaSelecionada.LetraOriginal);
+            Console.WriteLine(_musicaSelecionada.LetraOriginal);
+
+            this._exibindoTraducao = false;
+
+            await this.getOpcaoSubMenu();
+        }
+
+        public async Task mostrarTraducaoMusicaSelecionada()
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
+
+            Console.WriteLine(_musicaSelecionada.LetraTraduzida);
+
+            this._exibindoTraducao = true;
+
+            await this.getOpcaoSubMenu();
+        }
+
+        public async Task getOpcaoSubMenu()
+        {
+            bool respostaInvalida = true;
+            do
+            {
+                this.ExibirSubMenu();
+                Console.Write("Selecione uma das opções acima: ");
+
+                bool conseguiuConverter = int.TryParse(Console.ReadLine(), out int opcaoSelecionada);
+
+                if (conseguiuConverter)
+                {
+                    if (opcaoSelecionada == 1)
+                        await this.mostrarTraducaoMusicaSelecionada();
+                    else if (opcaoSelecionada == 2)
+                        await this.salvarMusica();
+                    else if (opcaoSelecionada == 0)
+                        await base.VoltarMenuPrincipal(this._jsonFileService);
+                    else
+                        base.ExibirMensagemErro("Opção inválida! Por favor, digite uma opção válida.");
+                }
+                else
+                {
+                    base.ExibirMensagemErro("Opção inválida! Por favor, digite uma opção válida.");
+                }
+            } while (respostaInvalida);
+        }
+
+        public void ExibirSubMenu()
+        {
+            Console.WriteLine("\n----------------------------");
+            Console.WriteLine("1 - Traduzir música");
+            Console.WriteLine("2 - Salvar música");
+            Console.WriteLine("0 - Voltar ao menu principal");
+            Console.WriteLine("----------------------------");
+        }
+
+        public async Task salvarMusica()
+        {
+            this._jsonFileService.Adicionar(this._musicaSelecionada);
+
+            if (this._exibindoTraducao == true)
+                await this.mostrarTraducaoMusicaSelecionada();
+            else
+                await this.mostrarLetraOriginalMusicaSelecionada();
         }
     }
 }

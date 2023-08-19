@@ -1,5 +1,6 @@
 ﻿namespace LyricsSongs.Console.Menus
 {
+    using LyricsSongs.Console.Services;
     using System;
 
     internal class Menu
@@ -21,10 +22,10 @@
             Console.WriteLine(bordasBottonTop + "\n");
         }
 
-        public async Task VoltarMenuPrincipal()
+        public async Task VoltarMenuPrincipal(IJsonFileService jsonFileService)
         {
             Console.Clear();
-            Menu menu = new MenuPrincipal();
+            Menu menu = new MenuPrincipal(jsonFileService);
             await menu.Exibir();
         }
 
@@ -35,5 +36,4 @@
             Console.ForegroundColor = ConsoleColor.White;
         }
     }
-
 }
