@@ -1,9 +1,11 @@
-﻿namespace LyricsSongs.Console.Menus
+﻿using LyricsSongs.Console.Menus;
+using LyricsSongs.Console.Services;
+
+namespace LyricsSongs.Console.Views
 {
-    using LyricsSongs.Console.Services;
     using System;
 
-    internal class Menu
+    public class View
     {
         public virtual Task Exibir()
         {
@@ -25,7 +27,7 @@
         public async Task VoltarMenuPrincipal(IJsonFileService jsonFileService)
         {
             Console.Clear();
-            Menu menu = new MenuPrincipal(jsonFileService);
+            MenuPrincipal menu = new MenuPrincipal(jsonFileService);
             await menu.Exibir();
         }
 
@@ -34,6 +36,11 @@
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"{mensagem}\n");
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public void EncerrarPrograma()
+        {
+            Environment.Exit(0);
         }
     }
 }

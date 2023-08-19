@@ -17,6 +17,7 @@ namespace LyricsSongs.Console.Service
 
         public async void Adicionar(Musica musica)
         {
+            musica.IsMusicaFavorita = true;
             this.musicasFavoritasSalvas.Add(musica);
 
             if (!this.jaPegouMusicasArquivoJson)

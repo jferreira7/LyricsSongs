@@ -8,5 +8,11 @@
         public string? Banda { get; set; }
         public string? LetraOriginal { get; set; }
         public string? LetraTraduzida { get; set; }
+        public bool IsMusicaFavorita { get; set; }
+
+        public Musica()
+        {
+            this.IsMusicaFavorita = false;
+        }
     }
 }

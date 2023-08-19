@@ -6,27 +6,21 @@
     using System.Text.Json;
     using System.Text.Json.Nodes;
 
-    public class ApiVagalume
+    public static class ApiVagalume
     {
-        private readonly string API_KEY = "d8f3e5fabca6e3e0ab123723bcd3e918";
+        private static readonly string API_KEY = "d8f3e5fabca6e3e0ab123723bcd3e918";
 
-        private Dictionary<int, Musica> musicasBuscadas;
-        private Musica musicaSelecionada;
+        private static Dictionary<int, Musica> musicasBuscadas = new();
+        private static Musica musicaSelecionada = new();
 
-        public ApiVagalume()
+        public static async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
         {
-            this.musicasBuscadas = new();
-            this.musicaSelecionada = new();
-        }
-
-        public async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
-        {
+            musicasBuscadas.Clear();
             using (HttpClient client = new())
             {
                 try
                 {
-                    //string url = $"https://api.vagalume.com.br/search.excerpt?q={textoPesquisa}&limit=10";
-                    string url = $"https://api.vagalume.com.br/search.artmus?apikey={this.API_KEY}&q={textoPesquisa}&limit=5";
+                    string url = $"https://api.vagalume.com.br/search.artmus?apikey={API_KEY}&q={textoPesquisa}&limit=5";
                     string retorno = await client.GetStringAsync(url);
 
                     JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
@@ -36,12 +30,12 @@
                     {
                         if (docs?[i]?["title"] == null) continue;
 
-                        this.musicasBuscadas.Add(++z, new Musica()
+                        musicasBuscadas.Add(++z, new Musica()
                         {
                             Id = docs?[i]?["id"]?.ToString(),
                             Nome = docs?[i]?["title"]?.ToString(),
                             Banda = docs?[i]?["band"]?.ToString(),
-                            Url = docs?[i]?["url"]?.ToString()
+                            Url = docs?[i]?["url"]?.ToString(),
                         });
                     }
                 }
@@ -51,24 +45,24 @@
                 }
             }
 
-            return this.musicasBuscadas;
+            return musicasBuscadas;
         }
 
-        public async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
+        public static async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
         {
-            if (this.musicasBuscadas.ContainsKey(musicaEscolhida))
+            if (musicasBuscadas.ContainsKey(musicaEscolhida))
             {
                 using (HttpClient client = new())
                 {
                     Guid guid = Guid.NewGuid();
-                    string url = $"https://api.vagalume.com.br/search.php?musid={this.musicasBuscadas[musicaEscolhida].Id}&apikey={this.API_KEY}&hash={guid.ToString()}";
+                    string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={API_KEY}&hash={guid.ToString()}";
                     var retorno = await client.GetStringAsync(url);
 
                     JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
                     JsonNode? musicaInfo = retornoObjeto?["mus"];
                     JsonNode? bandaInfo = retornoObjeto?["art"];
 
-                    this.musicaSelecionada = new()
+                    musicaSelecionada = new()
                     {
                         Id = musicaInfo?[0]?["id"]?.ToString(),
                         Url = musicaInfo?[0]?["url"]?.ToString(),
@@ -84,7 +78,7 @@
                 Console.WriteLine("Opção selecionada inválida!!");
             }
 
-            return this.musicaSelecionada;
+            return musicaSelecionada;
         }
     }
 }

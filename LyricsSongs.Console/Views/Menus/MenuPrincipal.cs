@@ -1,9 +1,10 @@
 ﻿namespace LyricsSongs.Console.Menus
 {
     using LyricsSongs.Console.Services;
+    using LyricsSongs.Console.Views;
     using System;
 
-    internal class MenuPrincipal : Menu
+    internal class MenuPrincipal : View
     {
         private string logo = @"
 ██╗░░░░░██╗░░░██╗██████╗░██╗░█████╗░░██████╗   ░██████╗░█████╗░███╗░░██╗░██████╗░░██████╗
@@ -13,24 +14,16 @@
 ███████╗░░░██║░░░██║░░██║██║╚█████╔╝██████╔╝   ██████╔╝╚█████╔╝██║░╚███║╚██████╔╝██████╔╝
 ╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░╚════╝░╚═════╝░   ╚═════╝░░╚════╝░╚═╝░░╚══╝░╚═════╝░╚═════╝░";
 
-        private Dictionary<int, Type> opcoes;
         private IJsonFileService _jsonFileService;
 
         public MenuPrincipal(IJsonFileService jsonFileService)
         {
             this._jsonFileService = jsonFileService;
-            this.opcoes = new()
-            {
-                { 1, typeof(MenuBuscarMusica) },
-                { 2, typeof(MenuLetrasSalvas) },
-                { 3, typeof(MenuConfiguracoes) },
-                { 0, typeof(MenuSair) }
-            };
         }
 
         public override async Task Exibir()
         {
-            await base.Exibir();
+            Console.Clear();
             Console.WriteLine(logo);
 
             Console.WriteLine("");
@@ -53,7 +46,7 @@
 
                 bool conseguiuConverter = int.TryParse(input, out int opcaoSelecionada);
 
-                if (conseguiuConverter && opcoes.ContainsKey(opcaoSelecionada))
+                if (conseguiuConverter && Enumerable.Range(0, 3).Contains(opcaoSelecionada))
                 {
                     await this.MostrarMenuSelecionado(opcaoSelecionada);
                     respostaInvalida = false;
@@ -67,28 +60,29 @@
 
         public async Task MostrarMenuSelecionado(int opcaoSelecionada)
         {
-            Menu? menu = null;
+            View tela = new();
 
             switch (opcaoSelecionada)
             {
                 case 1:
-                    menu = new MenuBuscarMusica(this._jsonFileService);
+                    tela = new BuscarMusica(this._jsonFileService);
                     break;
 
                 case 2:
-                    menu = new MenuLetrasSalvas(this._jsonFileService);
+                    tela = new LetrasSalvas(this._jsonFileService);
                     break;
 
                 case 0:
-                    menu = new MenuSair();
+                    base.EncerrarPrograma();
                     break;
 
                 default:
+                    base.ExibirMensagemErro("Opção inválida! Por favor, digite uma opção válida.");
                     break;
             }
 
-            if (menu != null)
-                await menu.Exibir();
+            if (tela != null)
+                await tela.Exibir();
         }
     }
 }
