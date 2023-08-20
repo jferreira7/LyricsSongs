@@ -17,10 +17,10 @@
         private IJsonFileService _jsonFileService;
         private int _quantidadeOpcoesMenu;
 
-        public MenuPrincipal(IJsonFileService jsonFileService)
+        public MenuPrincipal()
         {
+            this._jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
             this._quantidadeOpcoesMenu = 3;
-            this._jsonFileService = jsonFileService;
         }
 
         public override async Task Exibir()
@@ -77,11 +77,11 @@
             switch (opcaoSelecionada)
             {
                 case 1:
-                    tela = new BuscarMusica(this._jsonFileService);
+                    tela = new BuscarMusica();
                     break;
 
                 case 2:
-                    tela = new LetrasSalvas(this._jsonFileService);
+                    tela = new LetrasSalvas();
                     break;
 
                 case 0:

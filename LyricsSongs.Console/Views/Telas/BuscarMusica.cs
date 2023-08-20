@@ -11,9 +11,9 @@ namespace LyricsSongs.Console.Views
         public Dictionary<int, Musica> musicasEncontradas = new();
         private IJsonFileService _jsonFileService;
 
-        public BuscarMusica(IJsonFileService jsonFileService)
+        public BuscarMusica()
         {
-            _jsonFileService = jsonFileService;
+            _jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
         }
 
         public override async Task Exibir()
@@ -35,7 +35,7 @@ namespace LyricsSongs.Console.Views
 
             if (buscaTexto == "0")
             {
-                await VoltarMenuPrincipal(_jsonFileService);
+                await VoltarMenuPrincipal();
                 return;
             }
 
@@ -78,11 +78,11 @@ namespace LyricsSongs.Console.Views
                 {
                     if (opcaoSelecionada == 0)
                     {
-                        await VoltarMenuPrincipal(_jsonFileService);
+                        await VoltarMenuPrincipal();
                         return;
                     }
 
-                    MostrarLetra mostrarLetra = new(this._jsonFileService);
+                    MostrarLetra mostrarLetra = new();
                     Musica? musicaSelecionada = this.getMusicaSeJaEstaNosFavoritos(opcaoSelecionada);
                     if (musicaSelecionada != null)
                         await mostrarLetra.mostrarLetraOriginalMusicaSelecionada(musicaSelecionada);

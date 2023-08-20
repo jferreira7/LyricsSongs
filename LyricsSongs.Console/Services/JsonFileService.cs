@@ -7,11 +7,9 @@ namespace LyricsSongs.Console.Service
     public class JsonFileService : IJsonFileService
     {
         public List<Musica> musicasFavoritasSalvas { get; set; }
-        //private bool jaPegouMusicasArquivoJson;
 
         public JsonFileService()
         {
-            //this.jaPegouMusicasArquivoJson = false;
             this.musicasFavoritasSalvas = new();
         }
 
@@ -19,9 +17,6 @@ namespace LyricsSongs.Console.Service
         {
             musica.IsMusicaFavorita = true;
             this.musicasFavoritasSalvas.Add(musica);
-
-            //if (!this.jaPegouMusicasArquivoJson)
-            //    await this.GetMusicasDoArquivoJson();
 
             await this.SalvarNoArquivoJson();
         }
@@ -50,10 +45,6 @@ namespace LyricsSongs.Console.Service
 
             if (jsonContentText == "") return;
             this.musicasFavoritasSalvas = JsonSerializer.Deserialize<List<Musica>>(jsonContentText)!;
-            //List<Musica> jsonContentObject = JsonSerializer.Deserialize<List<Musica>>(jsonContentText)!;
-
-            //this.musicasFavoritasSalvas.InsertRange(0, jsonContentObject);
-            //this.jaPegouMusicasArquivoJson = true;
         }
     }
 }

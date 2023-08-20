@@ -12,37 +12,37 @@
         private Musica _musicaSelecionada;
         private IJsonFileService _jsonFileService;
 
-        public MostrarLetra(IJsonFileService jsonFileService)
+        public MostrarLetra()
         {
-            _jsonFileService = jsonFileService;
+            this._jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
             this._musicaSelecionada = new();
-            _exibindoTraducao = false;
+            this._exibindoTraducao = false;
         }
 
         public async Task mostrarLetraOriginalMusicaSelecionada()
         {
             Console.Clear();
 
-            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
-            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
+            Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(_musicaSelecionada.LetraOriginal);
+            Console.WriteLine(this._musicaSelecionada.LetraOriginal);
 
-            _exibindoTraducao = false;
+            this._exibindoTraducao = false;
 
             await getOpcaoSubMenu();
         }
 
         public async Task mostrarLetraOriginalMusicaSelecionada(int musicaEscolhida)
         {
-            _musicaSelecionada = await ApiVagalume.getMusicaSelecionada(musicaEscolhida);
+            this._musicaSelecionada = await ApiVagalume.getMusicaSelecionada(musicaEscolhida);
 
             Console.Clear();
 
-            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
-            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
+            Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(_musicaSelecionada.LetraOriginal);
+            Console.WriteLine(this._musicaSelecionada.LetraOriginal);
 
             _exibindoTraducao = false;
 
@@ -55,12 +55,12 @@
 
             Console.Clear();
 
-            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
-            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
+            Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(_musicaSelecionada.LetraOriginal);
+            Console.WriteLine(this._musicaSelecionada.LetraOriginal);
 
-            _exibindoTraducao = false;
+            this._exibindoTraducao = false;
 
             await getOpcaoSubMenu();
         }
@@ -69,12 +69,12 @@
         {
             Console.Clear();
 
-            Console.WriteLine($"Musica: {_musicaSelecionada.Nome}");
-            Console.WriteLine($"Cantor(a)/Banda: {_musicaSelecionada.Banda}\n");
+            Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
+            Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(_musicaSelecionada.LetraTraduzida);
+            Console.WriteLine(this._musicaSelecionada.LetraTraduzida);
 
-            _exibindoTraducao = true;
+            this._exibindoTraducao = true;
 
             await getOpcaoSubMenu();
         }
@@ -100,7 +100,7 @@
                     else if (opcaoSelecionada == 2 && this._musicaSelecionada.IsMusicaFavorita)
                         await removerMusicaFavoritos();
                     else if (opcaoSelecionada == 0)
-                        await VoltarMenuPrincipal(_jsonFileService);
+                        await VoltarMenuPrincipal();
                     else
                         ExibirMensagemErro("Opção inválida! Por favor, digite uma opção válida.");
                 }
@@ -132,7 +132,7 @@
 
         public async Task salvarMusicaFavoritos()
         {
-            _jsonFileService.Adicionar(_musicaSelecionada);
+            await this._jsonFileService.Adicionar(_musicaSelecionada);
 
             if (_exibindoTraducao == true)
                 await mostrarTraducaoMusicaSelecionada();

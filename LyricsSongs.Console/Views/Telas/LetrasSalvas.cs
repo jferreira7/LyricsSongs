@@ -10,10 +10,10 @@ namespace LyricsSongs.Console.Views
         private IJsonFileService _jsonFileService;
         private List<Musica> _musicasSalvas;
 
-        public LetrasSalvas(IJsonFileService jsonFileService)
+        public LetrasSalvas()
         {
-            this._jsonFileService = jsonFileService;
-            this._musicasSalvas = jsonFileService.musicasFavoritasSalvas;
+            this._jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
+            this._musicasSalvas = this._jsonFileService.musicasFavoritasSalvas;
         }
 
         public override async Task Exibir()
@@ -39,9 +39,9 @@ namespace LyricsSongs.Console.Views
                 if (conseguiuConverter && Enumerable.Range(0, this._musicasSalvas.Count + 1).Contains(opcaoSelecionada))
                 {
                     if (opcaoSelecionada == 0)
-                        await VoltarMenuPrincipal(this._jsonFileService);
+                        await VoltarMenuPrincipal();
                     else
-                        await (new MostrarLetra(this._jsonFileService)).mostrarLetraOriginalMusicaSelecionada(this._musicasSalvas[opcaoSelecionada - 1]);
+                        await (new MostrarLetra()).mostrarLetraOriginalMusicaSelecionada(this._musicasSalvas[opcaoSelecionada - 1]);
                 }
                 else
                 {

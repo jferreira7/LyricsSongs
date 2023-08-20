@@ -1,5 +1,4 @@
 ﻿using LyricsSongs.Console.Menus;
-using LyricsSongs.Console.Services;
 
 namespace LyricsSongs.Console.Views
 {
@@ -24,10 +23,10 @@ namespace LyricsSongs.Console.Views
             Console.WriteLine(bordasBottonTop + "\n");
         }
 
-        public async Task VoltarMenuPrincipal(IJsonFileService jsonFileService)
+        public async Task VoltarMenuPrincipal()
         {
             Console.Clear();
-            MenuPrincipal menu = new MenuPrincipal(jsonFileService);
+            MenuPrincipal menu = new MenuPrincipal();
             await menu.Exibir();
         }
 
