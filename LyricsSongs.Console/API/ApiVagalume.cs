@@ -10,7 +10,7 @@
     {
         private static readonly string API_KEY = "d8f3e5fabca6e3e0ab123723bcd3e918";
 
-        private static Dictionary<int, Musica> musicasBuscadas = new();
+        public static Dictionary<int, Musica> musicasBuscadas = new();
         private static Musica musicaSelecionada = new();
 
         public static async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)

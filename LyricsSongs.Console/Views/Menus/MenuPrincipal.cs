@@ -15,14 +15,18 @@
 ╚══════╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝░╚════╝░╚═════╝░   ╚═════╝░░╚════╝░╚═╝░░╚══╝░╚═════╝░╚═════╝░";
 
         private IJsonFileService _jsonFileService;
+        private int _quantidadeOpcoesMenu;
 
         public MenuPrincipal(IJsonFileService jsonFileService)
         {
+            this._quantidadeOpcoesMenu = 3;
             this._jsonFileService = jsonFileService;
         }
 
         public override async Task Exibir()
         {
+            await this.getMusicasSalvas();
+
             Console.Clear();
             Console.WriteLine(logo);
 
@@ -36,6 +40,14 @@
             await this.GetOpcaoSelecionada();
         }
 
+        public async Task getMusicasSalvas()
+        {
+            if (this._jsonFileService.musicasFavoritasSalvas.Count != 0) return;
+
+            Console.WriteLine("Carregando músicas salvas...");
+            await this._jsonFileService.GetMusicasDoArquivoJson();
+        }
+
         public async Task GetOpcaoSelecionada()
         {
             bool respostaInvalida = true;
@@ -46,7 +58,7 @@
 
                 bool conseguiuConverter = int.TryParse(input, out int opcaoSelecionada);
 
-                if (conseguiuConverter && Enumerable.Range(0, 3).Contains(opcaoSelecionada))
+                if (conseguiuConverter && Enumerable.Range(0, this._quantidadeOpcoesMenu + 1).Contains(opcaoSelecionada))
                 {
                     await this.MostrarMenuSelecionado(opcaoSelecionada);
                     respostaInvalida = false;

@@ -21,18 +21,10 @@ namespace LyricsSongs.Console.Views
             await base.Exibir();
             ExibirTituloMenu("LETRAS SALVAS");
 
-            await getMusicasSalvas();
-
             for (int i = 0; i < this._musicasSalvas.Count; i++)
                 Console.WriteLine($"{i + 1} - {this._musicasSalvas[i].Nome} - {this._musicasSalvas[i].Banda}");
 
             await getOpcaoSubMenu();
-        }
-
-        public async Task getMusicasSalvas()
-        {
-            if (_jsonFileService.musicasFavoritasSalvas.Count == 0)
-                await _jsonFileService.GetMusicasDoArquivoJson();
         }
 
         public async Task getOpcaoSubMenu()
@@ -44,7 +36,7 @@ namespace LyricsSongs.Console.Views
 
                 bool conseguiuConverter = int.TryParse(Console.ReadLine(), out int opcaoSelecionada);
 
-                if (conseguiuConverter && Enumerable.Range(0, this._musicasSalvas.Count).Contains(opcaoSelecionada))
+                if (conseguiuConverter && Enumerable.Range(0, this._musicasSalvas.Count + 1).Contains(opcaoSelecionada))
                 {
                     if (opcaoSelecionada == 0)
                         await VoltarMenuPrincipal(this._jsonFileService);

@@ -64,12 +64,6 @@ namespace LyricsSongs.Console.Views
             await getOpcaoSelecionada();
         }
 
-        private void checarSeMusicaJaEstaNosFavoritos()
-        {
-            //TODO: checar pelo ID se a música já não existe entre as favoritas
-            throw new NotImplementedException();
-        }
-
         public async Task getOpcaoSelecionada()
         {
             bool respostaInvalida = true;
@@ -78,17 +72,22 @@ namespace LyricsSongs.Console.Views
                 Console.Write("\nSelecione a música correta (0 p/ voltar): ");
                 string? reposta = Console.ReadLine();
 
-                bool conseguiuConverterResposta = int.TryParse(reposta, out int musicaEscolhida);
+                bool conseguiuConverterResposta = int.TryParse(reposta, out int opcaoSelecionada);
 
-                if (conseguiuConverterResposta && musicaEscolhida >= 0 && musicaEscolhida <= musicasEncontradas.Count)
+                if (conseguiuConverterResposta && opcaoSelecionada >= 0 && opcaoSelecionada <= musicasEncontradas.Count)
                 {
-                    if (musicaEscolhida == 0)
+                    if (opcaoSelecionada == 0)
                     {
                         await VoltarMenuPrincipal(_jsonFileService);
                         return;
                     }
 
-                    await (new MostrarLetra(this._jsonFileService)).mostrarLetraOriginalMusicaSelecionada(musicaEscolhida);
+                    MostrarLetra mostrarLetra = new(this._jsonFileService);
+                    Musica? musicaSelecionada = this.getMusicaSeJaEstaNosFavoritos(opcaoSelecionada);
+                    if (musicaSelecionada != null)
+                        await mostrarLetra.mostrarLetraOriginalMusicaSelecionada(musicaSelecionada);
+                    else
+                        await mostrarLetra.mostrarLetraOriginalMusicaSelecionada(opcaoSelecionada);
 
                     respostaInvalida = false;
                 }
@@ -97,6 +96,16 @@ namespace LyricsSongs.Console.Views
                     ExibirMensagemErro("Opção inválida! Por favor, digite uma opção válida.");
                 }
             } while (respostaInvalida);
+        }
+
+        private Musica? getMusicaSeJaEstaNosFavoritos(int opcaoSelecionada)
+        {
+            /*
+             * É necessário usar o Substring(1) para remover o primeiro caractere o Id das músicas buscadas, pois só assim o Id ficara igual ao Id quando é buscado a música por completo. Existe essa diferença entre os Ids.
+             */
+            Musica? musicaSelecionada = this._jsonFileService.musicasFavoritasSalvas.Where(musica => musica.Id == ApiVagalume.musicasBuscadas[opcaoSelecionada].Id!.Substring(1)).FirstOrDefault();
+
+            return musicaSelecionada;
         }
     }
 }

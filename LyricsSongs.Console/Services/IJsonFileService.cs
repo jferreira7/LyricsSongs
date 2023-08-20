@@ -6,9 +6,11 @@ namespace LyricsSongs.Console.Services
     {
         public List<Musica> musicasFavoritasSalvas { get; set; }
 
-        public void Adicionar(Musica musica);
+        public Task Adicionar(Musica musica);
 
-        public void SalvarNoArquivoJson();
+        public Task Remover(Musica musica);
+
+        public Task SalvarNoArquivoJson();
 
         public Task GetMusicasDoArquivoJson() { return Task.CompletedTask; }
     }

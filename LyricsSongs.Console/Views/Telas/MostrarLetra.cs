@@ -111,9 +111,11 @@
             } while (respostaInvalida);
         }
 
-        private Task removerMusicaFavoritos()
+        private async Task removerMusicaFavoritos()
         {
-            throw new NotImplementedException();
+            await this._jsonFileService.Remover(this._musicaSelecionada);
+            this._musicaSelecionada.IsMusicaFavorita = false;
+            await this.mostrarLetraOriginalMusicaSelecionada();
         }
 
         public void ExibirSubMenu()
