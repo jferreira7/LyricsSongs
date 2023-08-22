@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LyricsSongs.Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "token_api_vagalume": ""
+      }
+    }
+  }
+}

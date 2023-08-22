@@ -8,7 +8,7 @@
 
     public static class ApiVagalume
     {
-        private static readonly string API_KEY = "d8f3e5fabca6e3e0ab123723bcd3e918";
+        private static readonly string? API_KEY = Environment.GetEnvironmentVariable("token_api_vagalume") ?? null;
 
         public static Dictionary<int, Musica> musicasBuscadas = new();
         private static Musica musicaSelecionada = new();
