@@ -8,7 +8,7 @@ namespace LyricsSongs.Console.Views
     {
         public virtual Task Exibir()
         {
-            Console.Clear();
+            LimparConsole();
             return Task.CompletedTask;
         }
 
@@ -25,7 +25,6 @@ namespace LyricsSongs.Console.Views
 
         public async Task VoltarMenuPrincipal()
         {
-            Console.Clear();
             MenuPrincipal menu = new MenuPrincipal();
             await menu.Exibir();
         }
@@ -40,6 +39,13 @@ namespace LyricsSongs.Console.Views
         public void EncerrarPrograma()
         {
             Environment.Exit(0);
+        }
+
+        public void LimparConsole()
+        {
+            Console.Clear();
+            Console.WriteLine("\x1b[3J");
+            Console.Clear();
         }
     }
 }

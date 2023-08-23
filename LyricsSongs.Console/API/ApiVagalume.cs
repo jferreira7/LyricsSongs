@@ -8,7 +8,7 @@
 
     public static class ApiVagalume
     {
-        private static readonly string? API_KEY = Environment.GetEnvironmentVariable("token_api_vagalume") ?? null;
+        private static readonly string? API_KEY = Environment.GetEnvironmentVariable("lyricssongs_token_api_vagalume", EnvironmentVariableTarget.User) ?? null;
 
         public static Dictionary<int, Musica> musicasBuscadas = new();
         private static Musica musicaSelecionada = new();
@@ -54,23 +54,30 @@
             {
                 using (HttpClient client = new())
                 {
-                    Guid guid = Guid.NewGuid();
-                    string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={API_KEY}&hash={guid.ToString()}";
-                    var retorno = await client.GetStringAsync(url);
-
-                    JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
-                    JsonNode? musicaInfo = retornoObjeto?["mus"];
-                    JsonNode? bandaInfo = retornoObjeto?["art"];
-
-                    musicaSelecionada = new()
+                    try
                     {
-                        Id = musicaInfo?[0]?["id"]?.ToString(),
-                        Url = musicaInfo?[0]?["url"]?.ToString(),
-                        Nome = musicaInfo?[0]?["name"]?.ToString(),
-                        Banda = bandaInfo?["name"]?.ToString(),
-                        LetraOriginal = musicaInfo?[0]?["text"]?.ToString(),
-                        LetraTraduzida = musicaInfo?[0]?["translate"]?[0]?["text"]?.ToString()
-                    };
+                        Guid guid = Guid.NewGuid();
+                        string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={API_KEY}&hash={guid.ToString()}";
+                        var retorno = await client.GetStringAsync(url);
+
+                        JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
+                        JsonNode? musicaInfo = retornoObjeto?["mus"];
+                        JsonNode? bandaInfo = retornoObjeto?["art"];
+
+                        musicaSelecionada = new()
+                        {
+                            Id = musicaInfo?[0]?["id"]?.ToString(),
+                            Url = musicaInfo?[0]?["url"]?.ToString(),
+                            Nome = musicaInfo?[0]?["name"]?.ToString(),
+                            Banda = bandaInfo?["name"]?.ToString(),
+                            LetraOriginal = musicaInfo?[0]?["text"]?.ToString(),
+                            LetraTraduzida = musicaInfo?[0]?["translate"]?[0]?["text"]?.ToString()
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                 }
             }
             else

@@ -16,6 +16,7 @@
 
         private IJsonFileService _jsonFileService;
         private int _quantidadeOpcoesMenu;
+        public static bool flagGetMusicaSalva = false;
 
         public MenuPrincipal()
         {
@@ -25,9 +26,14 @@
 
         public override async Task Exibir()
         {
-            await this.getMusicasSalvas();
+            if (flagGetMusicaSalva == false)
+            {
+                await this.getMusicasSalvas();
+                flagGetMusicaSalva = true;
+            }
 
-            Console.Clear();
+            LimparConsole();
+
             Console.WriteLine(logo);
 
             Console.WriteLine("");
@@ -82,6 +88,10 @@
 
                 case 2:
                     tela = new LetrasSalvas();
+                    break;
+
+                case 3:
+                    tela = new Configuracoes();
                     break;
 
                 case 0:

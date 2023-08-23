@@ -3,6 +3,7 @@
     using LyricsSongs.Console.Menus;
     using LyricsSongs.Console.Services;
     using LyricsSongs.Console.Views;
+    using Microsoft.Extensions.Configuration;
     using System;
     using System.Text;
 
@@ -10,22 +11,32 @@
     {
         private static void Main()
         {
-            //Environment.SetEnvironmentVariable("token_api_vagalume", "", EnvironmentVariableTarget.User);
+            //Environment.SetEnvironmentVariable("lyricssongs_token_api_vagalume", "", EnvironmentVariableTarget.User);
+            //setx lyricssongs_token_api_vagalume ""
+
             Console.OutputEncoding = Encoding.UTF8;
 
-            checarSeOTokenExiste();
+            ChecarSeOTokenExiste();
 
             ServiceProviderFactory.Initializer();
 
             (new MenuPrincipal()).Exibir().Wait();
         }
 
-        private static void checarSeOTokenExiste()
+        private static void ChecarSeOTokenExiste()
         {
-            string? token = Environment.GetEnvironmentVariable("token_api_vagalume");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
 
-            if (token != null) return;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("lyricssongs_token_api_vagalume", EnvironmentVariableTarget.User))) return;
 
+            if (!string.IsNullOrEmpty(configuration["Settings:Token_Vagalume"]))
+                if (SetApiTokenEnvVariable(configuration["Settings:Token_Vagalume"])) return;
+
+            string? token = "";
             do
             {
                 Console.Write("Digite um token válido (https://api.vagalume.com.br/): ");
@@ -33,7 +44,7 @@
 
                 if (token != null && token.Trim() != "")
                 {
-                    Environment.SetEnvironmentVariable("token_api_vagalume", token, EnvironmentVariableTarget.User);
+                    SetApiTokenEnvVariable(token);
                     Console.WriteLine("Token cadastrado!");
                     Thread.Sleep(1000);
                     break;
@@ -43,6 +54,14 @@
                     Console.WriteLine("Token inválido");
                 }
             } while (true);
+        }
+
+        private static bool SetApiTokenEnvVariable(string? token)
+        {
+            if (string.IsNullOrEmpty(token)) return false;
+
+            Environment.SetEnvironmentVariable("lyricssongs_token_api_vagalume", token, EnvironmentVariableTarget.User);
+            return true;
         }
     }
 }

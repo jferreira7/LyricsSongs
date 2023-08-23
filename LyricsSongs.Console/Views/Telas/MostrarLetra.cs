@@ -21,7 +21,7 @@
 
         public async Task mostrarLetraOriginalMusicaSelecionada()
         {
-            Console.Clear();
+            LimparConsole();
 
             Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
             Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
@@ -37,7 +37,7 @@
         {
             this._musicaSelecionada = await ApiVagalume.getMusicaSelecionada(musicaEscolhida);
 
-            Console.Clear();
+            LimparConsole();
 
             Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
             Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
@@ -53,7 +53,7 @@
         {
             this._musicaSelecionada = musica;
 
-            Console.Clear();
+            LimparConsole();
 
             Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
             Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
@@ -67,7 +67,7 @@
 
         public async Task mostrarTraducaoMusicaSelecionada()
         {
-            Console.Clear();
+            LimparConsole();
 
             Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
             Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
