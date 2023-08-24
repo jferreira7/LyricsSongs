@@ -14,6 +14,7 @@ namespace LyricsSongs.Console.Services
             ServiceProviderFactory._serviceProvider = new ServiceCollection()
               .AddSingleton<IJsonFileService, JsonFileService>()
               .AddSingleton<ITokenService, TokenService>()
+              .AddSingleton<IApiVagalumeService, ApiVagalumeService>()
               .BuildServiceProvider();
         }
 

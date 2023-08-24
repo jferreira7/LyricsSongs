@@ -1,26 +1,26 @@
-﻿namespace LyricsSongs.Console.API
+﻿using LyricsSongs.Console.Models;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
+namespace LyricsSongs.Console.Services
 {
-    using LyricsSongs.Console.Models;
     using System;
-    using System.Collections.Generic;
-    using System.Text.Json;
-    using System.Text.Json.Nodes;
 
-    public static class ApiVagalume
+    public class ApiVagalumeService : IApiVagalumeService
     {
-        private static string _apiKey { get; set; } = string.Empty;
+        private string _apiKey { get; set; } = string.Empty;
+        public Dictionary<int, Musica> MusicasBuscadas { get; set; } = new();
 
-        public static Dictionary<int, Musica> musicasBuscadas = new();
-        private static Musica musicaSelecionada = new();
+        private Musica musicaSelecionada = new();
 
-        public static void SetApiKey(string token)
+        public void SetApiKey(string token)
         {
             _apiKey = token;
         }
 
-        public static async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
+        public async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
         {
-            musicasBuscadas.Clear();
+            MusicasBuscadas.Clear();
             using (HttpClient client = new())
             {
                 try
@@ -35,7 +35,7 @@
                     {
                         if (docs?[i]?["title"] == null) continue;
 
-                        musicasBuscadas.Add(++z, new Musica()
+                        MusicasBuscadas.Add(++z, new Musica()
                         {
                             Id = docs?[i]?["id"]?.ToString(),
                             Nome = docs?[i]?["title"]?.ToString(),
@@ -50,19 +50,19 @@
                 }
             }
 
-            return musicasBuscadas;
+            return MusicasBuscadas;
         }
 
-        public static async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
+        public async Task<Musica> getMusicaSelecionada(int musicaEscolhida)
         {
-            if (musicasBuscadas.ContainsKey(musicaEscolhida))
+            if (MusicasBuscadas.ContainsKey(musicaEscolhida))
             {
                 using (HttpClient client = new())
                 {
                     try
                     {
                         Guid guid = Guid.NewGuid();
-                        string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={_apiKey}&hash={guid.ToString()}";
+                        string url = $"https://api.vagalume.com.br/search.php?musid={MusicasBuscadas[musicaEscolhida].Id}&apikey={_apiKey}&hash={guid.ToString()}";
                         var retorno = await client.GetStringAsync(url);
 
                         JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);

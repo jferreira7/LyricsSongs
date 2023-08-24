@@ -1,5 +1,4 @@
-﻿using LyricsSongs.Console.API;
-using LyricsSongs.Console.Models;
+﻿using LyricsSongs.Console.Models;
 using LyricsSongs.Console.Services;
 
 namespace LyricsSongs.Console.Views
@@ -9,17 +8,25 @@ namespace LyricsSongs.Console.Views
     internal class BuscarMusica : View
     {
         public Dictionary<int, Musica> musicasEncontradas = new();
+        private IApiVagalumeService _apiVagalumeService;
         private IJsonFileService _jsonFileService;
+        private bool isNenhumaMusicaEncontrada = false;
 
         public BuscarMusica()
         {
-            _jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
+            this._apiVagalumeService = ServiceProviderFactory.GetService<IApiVagalumeService>();
+            this._jsonFileService = ServiceProviderFactory.GetService<IJsonFileService>();
         }
 
         public override async Task Exibir()
         {
-            await base.Exibir();
-            ExibirTituloMenu("BUSCAR MÚSICA");
+
+            if (!this.isNenhumaMusicaEncontrada)
+            {
+                await base.Exibir();
+                ExibirTituloMenu("BUSCAR MÚSICA");
+            }
+
 
             string? buscaTexto;
             do
@@ -44,11 +51,13 @@ namespace LyricsSongs.Console.Views
 
         public async Task buscarMusicasParaSelecionar(string buscaTexto)
         {
-            musicasEncontradas = await ApiVagalume.SearchMusicas(buscaTexto);
+            musicasEncontradas = await this._apiVagalumeService.SearchMusicas(buscaTexto);
 
             if (musicasEncontradas.Count == 0)
             {
-                Console.WriteLine("\nNenhuma música encontrada!");
+                Console.WriteLine("\nNenhuma música encontrada!\n");
+                this.isNenhumaMusicaEncontrada = true;
+                await this.Exibir();
                 return;
             }
 
@@ -103,7 +112,7 @@ namespace LyricsSongs.Console.Views
             /*
              * É necessário usar o Substring(1) para remover o primeiro caractere o Id das músicas buscadas, pois só assim o Id ficara igual ao Id quando é buscado a música por completo. Existe essa diferença entre os Ids.
              */
-            Musica? musicaSelecionada = this._jsonFileService.musicasFavoritasSalvas.Where(musica => musica.Id == ApiVagalume.musicasBuscadas[opcaoSelecionada].Id!.Substring(1)).FirstOrDefault();
+            Musica? musicaSelecionada = this._jsonFileService.musicasFavoritasSalvas.Where(musica => musica.Id == this._apiVagalumeService.MusicasBuscadas[opcaoSelecionada].Id!.Substring(1)).FirstOrDefault();
 
             return musicaSelecionada;
         }

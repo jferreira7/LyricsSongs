@@ -1,6 +1,5 @@
 ﻿namespace LyricsSongs.Console.Services
 {
-    using LyricsSongs.Console.API;
     using System;
     using System.IO;
     using System.Security.Cryptography;
@@ -14,7 +13,7 @@
 
             if (token != null)
             {
-                ApiVagalume.SetApiKey(token);
+                (ServiceProviderFactory.GetService<IApiVagalumeService>()).SetApiKey(token);
             }
             else
             {

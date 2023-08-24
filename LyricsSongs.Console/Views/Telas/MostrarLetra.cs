@@ -1,7 +1,5 @@
 ﻿namespace LyricsSongs.Console.Views
-
 {
-    using LyricsSongs.Console.API;
     using LyricsSongs.Console.Models;
     using LyricsSongs.Console.Services;
     using System;
@@ -35,7 +33,7 @@
 
         public async Task mostrarLetraOriginalMusicaSelecionada(int musicaEscolhida)
         {
-            this._musicaSelecionada = await ApiVagalume.getMusicaSelecionada(musicaEscolhida);
+            this._musicaSelecionada = await (ServiceProviderFactory.GetService<IApiVagalumeService>()).getMusicaSelecionada(musicaEscolhida);
 
             LimparConsole();
 
@@ -72,7 +70,10 @@
             Console.WriteLine($"Musica: {this._musicaSelecionada.Nome}");
             Console.WriteLine($"Cantor(a)/Banda: {this._musicaSelecionada.Banda}\n");
 
-            Console.WriteLine(this._musicaSelecionada.LetraTraduzida);
+            if (this._musicaSelecionada.LetraTraduzida != null)
+                Console.WriteLine(this._musicaSelecionada.LetraTraduzida);
+            else
+                Console.WriteLine("Tradução não disponível.");
 
             this._exibindoTraducao = true;
 
@@ -121,7 +122,7 @@
         public void ExibirSubMenu()
         {
             string textoVersaoLetra = (this._exibindoTraducao) ? "Mostrar original" : "Traduzir música";
-            string textoSalvarOuDeletar = (this._musicaSelecionada.IsMusicaFavorita) ? "Remover música" : "Salvar música";
+            string textoSalvarOuDeletar = (this._musicaSelecionada.IsMusicaFavorita) ? "Remover música dos favoritos" : "Salvar música nos favoritos";
 
             Console.WriteLine("\n----------------------------");
             Console.WriteLine($"1 - {textoVersaoLetra}");

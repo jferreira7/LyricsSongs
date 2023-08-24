@@ -1,6 +1,5 @@
 ﻿namespace LyricsSongs.Console
 {
-    using LyricsSongs.Console.API;
     using LyricsSongs.Console.Menus;
     using LyricsSongs.Console.Services;
     using LyricsSongs.Console.Views;
@@ -29,6 +28,8 @@
             return ServiceProviderFactory.GetService<ITokenService>();
         }
 
+#if DEBUG
+
         public static bool IsInDebbugingMode()
         {
             if (!System.Diagnostics.Debugger.IsAttached) return false;
@@ -40,7 +41,7 @@
 
             if (!string.IsNullOrEmpty(configuration["Settings:Token_Vagalume"]))
             {
-                ApiVagalume.SetApiKey(configuration["Settings:Token_Vagalume"]!);
+                (ServiceProviderFactory.GetService<IApiVagalumeService>()).SetApiKey(configuration["Settings:Token_Vagalume"]!);
             }
             else
             {
@@ -51,5 +52,7 @@
 
             return true;
         }
+
+#endif
     }
 }
