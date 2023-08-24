@@ -6,6 +6,9 @@ appsettings.Production.json
 */**/bin/
 */**/obj/
 
+# Pasta de saída de compilação
+*/**/Properties/
+
 # Arquivos temporários
 *.user
 *.vscode
