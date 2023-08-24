@@ -2,6 +2,7 @@
 {
     using LyricsSongs.Console.Services;
     using LyricsSongs.Console.Views;
+    using LyricsSongs.Console.Views.Menus;
     using System;
 
     internal class MenuPrincipal : View
@@ -26,13 +27,14 @@
 
         public override async Task Exibir()
         {
+
             if (flagGetMusicaSalva == false)
             {
                 await this.getMusicasSalvas();
                 flagGetMusicaSalva = true;
             }
 
-            LimparConsole();
+            await base.Exibir();
 
             Console.WriteLine(logo);
 
@@ -41,7 +43,6 @@
             Console.WriteLine("2 - Letras salvas");
             Console.WriteLine("3 - Configurações");
             Console.WriteLine("0 - Sair");
-            Console.WriteLine("");
 
             await this.GetOpcaoSelecionada();
         }
@@ -59,14 +60,14 @@
             bool respostaInvalida = true;
             do
             {
-                Console.Write("Selecione uma opção: ");
+                Console.Write("\nSelecione uma opção: ");
                 string? input = Console.ReadLine();
 
                 bool conseguiuConverter = int.TryParse(input, out int opcaoSelecionada);
 
                 if (conseguiuConverter && Enumerable.Range(0, this._quantidadeOpcoesMenu + 1).Contains(opcaoSelecionada))
                 {
-                    await this.MostrarMenuSelecionado(opcaoSelecionada);
+                    await this.MostrarTelaSelecionada(opcaoSelecionada);
                     respostaInvalida = false;
                 }
                 else
@@ -76,7 +77,7 @@
             } while (respostaInvalida);
         }
 
-        public async Task MostrarMenuSelecionado(int opcaoSelecionada)
+        public async Task MostrarTelaSelecionada(int opcaoSelecionada)
         {
             View tela = new();
 
@@ -91,7 +92,7 @@
                     break;
 
                 case 3:
-                    tela = new Configuracoes();
+                    tela = new MenuConfiguracoes();
                     break;
 
                 case 0:

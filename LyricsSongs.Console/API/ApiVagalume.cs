@@ -8,10 +8,15 @@
 
     public static class ApiVagalume
     {
-        private static readonly string? API_KEY = Environment.GetEnvironmentVariable("lyricssongs_token_api_vagalume", EnvironmentVariableTarget.User) ?? null;
+        private static string _apiKey { get; set; } = string.Empty;
 
         public static Dictionary<int, Musica> musicasBuscadas = new();
         private static Musica musicaSelecionada = new();
+
+        public static void SetApiKey(string token)
+        {
+            _apiKey = token;
+        }
 
         public static async Task<Dictionary<int, Musica>> SearchMusicas(string textoPesquisa)
         {
@@ -20,7 +25,7 @@
             {
                 try
                 {
-                    string url = $"https://api.vagalume.com.br/search.artmus?apikey={API_KEY}&q={textoPesquisa}&limit=5";
+                    string url = $"https://api.vagalume.com.br/search.artmus?apikey={_apiKey}&q={textoPesquisa}&limit=5";
                     string retorno = await client.GetStringAsync(url);
 
                     JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
@@ -57,7 +62,7 @@
                     try
                     {
                         Guid guid = Guid.NewGuid();
-                        string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={API_KEY}&hash={guid.ToString()}";
+                        string url = $"https://api.vagalume.com.br/search.php?musid={musicasBuscadas[musicaEscolhida].Id}&apikey={_apiKey}&hash={guid.ToString()}";
                         var retorno = await client.GetStringAsync(url);
 
                         JsonNode? retornoObjeto = JsonSerializer.Deserialize<JsonNode>(retorno);
